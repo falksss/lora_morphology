@@ -1,0 +1,24 @@
+# Data — raw datasets can be large; re-download from UniMorph/SIGMORPHON instead
+data/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Conda environments (keep environment.yml, ignore the actual env folder)
+envs/
+.conda/
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# Weights & Biases local runs
+wandb/
+
+# macOS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
