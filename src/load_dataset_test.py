@@ -1,16 +1,32 @@
-from datasets import load_dataset
+import pandas as pd
+import requests
+from io import StringIO
 
-# Example: Let's load a small language split or check available configurations 
-# (UniMorph data is structured cleanly by language codes like 'eng', 'spa', 'swe')
-try:
-    # If loading a specific mirror/subset from Hugging Face:
-    dataset = load_dataset("unimorph/universal_morphologies", "eng", split="train", streaming=True)
-    
-    # Grab just the first 5 rows to see what it looks like
-    print("Successfully connected to Hugging Face dataset!")
-    for i, sample in enumerate(dataset):
-        print(sample)
-        if i >= 4:
-            break
-except Exception as e:
-    print("Note: If the repo structure requires a specific subset name, you can fallback to local TSV files. Error:", e)
+# UniMorph TSV files are hosted directly on GitHub
+# Format per row: lemma \t features \t surface_form
+UNIMORPH_URLS = {
+    "eng": "https://raw.githubusercontent.com/unimorph/eng/master/eng",
+    "spa": "https://raw.githubusercontent.com/unimorph/spa/master/spa",
+    "swe": "https://raw.githubusercontent.com/unimorph/swe/master/swe",
+}
+
+def load_unimorph(lang: str) -> pd.DataFrame:
+    url = UNIMORPH_URLS[lang]
+    print(f"Fetching {lang} from {url} ...")
+    response = requests.get(url, timeout=30)
+    response.raise_for_status()
+    df = pd.read_csv(
+        StringIO(response.text),
+        sep="\t",
+        header=None,
+        names=["lemma", "surface_form", "features"],
+        comment="#",       # skip comment lines if any
+    )
+    df = df.dropna()
+    return df
+
+if __name__ == "__main__":
+    for lang in ["eng", "spa", "swe"]:
+        df = load_unimorph(lang)
+        print(f"\n=== {lang.upper()} — {len(df):,} rows ===")
+        print(df.head(5).to_string(index=False))
