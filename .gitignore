@@ -22,3 +22,6 @@ wandb/
 # Editor
 .vscode/
 .idea/
+
+# Trained LoRA adapters / checkpoints (large; kept on Drive)
+models/

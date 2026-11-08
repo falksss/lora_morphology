@@ -24,3 +24,4 @@ dependencies:
     - wandb>=0.16.0
     - tiktoken
     - sentencepiece
+    - wordfreq  # lluc/: lemma frequency tiers (common / mid / obscure)
